@@ -11,71 +11,69 @@ export default function Home() {
   const [page, setPage] = React.useState(1);
   const [pages, setPages] = React.useState(1);
   const [reports, setReports] = React.useState([]);
-  const [reportsh, setReportsH] = React.useState([]);
   const [hasMoreReports, setHasMoreReports] = React.useState(false);
 
-  const session = useSession;
+  const session = useSession();
 
   React.useEffect(() => {
+    if (activePage === "monitor") {
+      const fetchReports = async () => {
+        try {
+          //setIsLoading(true);
+          const { data } = await GetReports({
+            token: session?.data?.accessToken,
+            endpoint: "monitor",
+            query: `limit=${10}&page=${page}`,
+          });
 
-    const fetchReports = async () => {
-      try {
-        //setIsLoading(true);
-        const { data } = await GetReports({
-          token: session?.data?.accesToken,
-          endpoint: "monitor",
-          query: `limit=${10}&page=${page}`,
-        });
+          setReports(data?.data?.data.reports);
+          setPages(data.data?.pagination.pages);
+          setHasMoreReports(data?.data?.pagination.page < data.data?.pagination.pages);
 
-        setReports(data?.data?.data.reports);
-        setPages(data.data?.pagination.pages);
-        setHasMoreReports(data?.data?.pagination.page < data.data?.pagination.pages);
+          // If the component is unmounted, don't update the state.
+          //if (isMounted) {
+          //  setPosts((prevPosts) => [...prevPosts, ...data]);
+          //  setHasMorePosts(pagination.page < pagination.pages);
+          //  setIsLoading(false);
+          //}
+        } catch (error) {
+          //setIsLoading(false);
+          //showAlert("Oops try again later...", "error");
+        }
+      };
 
-        // If the component is unmounted, don't update the state.
-        //if (isMounted) {
-        //  setPosts((prevPosts) => [...prevPosts, ...data]);
-        //  setHasMorePosts(pagination.page < pagination.pages);
-        //  setIsLoading(false);
-        //}
-      } catch (error) {
-        //setIsLoading(false);
-        //showAlert("Oops try again later...", "error");
-      }
-    };
+      fetchReports();
+    }
+    else if (activePage === "history") {
+      const fetchReports = async () => {
+        try {
+          //setIsLoading(true);
+          const { data } = await GetReports({
+            token: session?.data?.accesToken,
+            endpoint: "history",
+            query: `limit=${10}&page=${page}`,
+          });
 
-    fetchReports();
 
+          setReports(data?.data?.data.reports);
+          setPages(data.data?.pagination.pages);
+          setHasMoreReports(data?.data?.pagination.page < data.data?.pagination.pages);
+          // If the component is unmounted, don't update the state.
+          //if (isMounted) {
+          //  setPosts((prevPosts) => [...prevPosts, ...data]);
+          //  setHasMorePosts(pagination.page < pagination.pages);
+          //  setIsLoading(false);
+          //}
+        } catch (error) {
+          //setIsLoading(false);
+          //showAlert("Oops try again later...", "error");
+        }
+      };
+
+      fetchReports();
+    }
   }, []);
 
-  React.useEffect(() => {
-
-    const fetchReports = async () => {
-      try {
-        //setIsLoading(true);
-        const { data } = await GetReports({
-          token: session?.data?.accesToken,
-          endpoint: "history",
-          query: `limit=${10}&page=${page}`,
-        });
-
-        setReports(data?.data?.data.reports);
-        setPages(data.data?.pagination.pages);
-        setHasMoreReports(data?.data?.pagination.page < data.data?.pagination.pages);
-        // If the component is unmounted, don't update the state.
-        //if (isMounted) {
-        //  setPosts((prevPosts) => [...prevPosts, ...data]);
-        //  setHasMorePosts(pagination.page < pagination.pages);
-        //  setIsLoading(false);
-        //}
-      } catch (error) {
-        //setIsLoading(false);
-        //showAlert("Oops try again later...", "error");
-      }
-    };
-
-    fetchReports();
-
-  }, []);
 
 
   return (
@@ -86,7 +84,7 @@ export default function Home() {
       />
       <main className="p-4">
         <h2 className="text-xl font-semibold mb-4 text-darkprim">
-          {activePage === "monitor" ? "Monitor de reportes" : "Historial de reportes"} 
+          {activePage === "monitor" ? "Monitor de reportes" : "Historial de reportes"}
         </h2>
 
         <div className="flex justify-end mb-4">
@@ -146,7 +144,7 @@ export default function Home() {
               )}
               {(activePage === "historial") && (
                 <>
-                  {reportsh.map(({ username, type, createdAt, status }, i) => (
+                  {reports.map(({ username, type, createdAt, status }, i) => (
                     <tr
                       key={`${i} - ${createdAt}`}
                     >
