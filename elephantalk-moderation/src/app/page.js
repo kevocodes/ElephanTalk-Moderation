@@ -16,6 +16,12 @@ export default function Home() {
   const session = useSession();
 
   React.useEffect(() => {
+    if (!session?.data?.accessToken) {
+      return;
+    }
+
+    console.log("sadmlsmad");
+
     if (activePage === "monitor") {
       const fetchReports = async () => {
         try {
@@ -26,9 +32,11 @@ export default function Home() {
             query: `limit=${10}&page=${page}`,
           });
 
-          setReports(data?.data?.data.reports);
-          setPages(data.data?.pagination.pages);
-          setHasMoreReports(data?.data?.pagination.page < data.data?.pagination.pages);
+          console.log(data);
+
+          setReports(data?.reports);
+          setPages(data?.pagination.pages);
+          setHasMoreReports(data?.pagination.page < data.data?.pagination.pages);
 
           // If the component is unmounted, don't update the state.
           //if (isMounted) {
@@ -49,15 +57,15 @@ export default function Home() {
         try {
           //setIsLoading(true);
           const { data } = await GetReports({
-            token: session?.data?.accesToken,
+            token: session?.data?.accessToken,
             endpoint: "history",
             query: `limit=${10}&page=${page}`,
           });
 
 
-          setReports(data?.data?.data.reports);
-          setPages(data.data?.pagination.pages);
-          setHasMoreReports(data?.data?.pagination.page < data.data?.pagination.pages);
+          setReports(data?.reports);
+          setPages(data?.pagination.pages);
+          setHasMoreReports(data?.pagination.page < data.data?.pagination.pages);
           // If the component is unmounted, don't update the state.
           //if (isMounted) {
           //  setPosts((prevPosts) => [...prevPosts, ...data]);
@@ -72,9 +80,16 @@ export default function Home() {
 
       fetchReports();
     }
-  }, []);
+  }, [session, activePage, page]);
 
+  const loadNext = () => {
+    setPage((page) => page + 1);
+    //setIsLoading(true);
+  };
 
+  const loadLast = () => {
+    setPage((page) => page - 1);
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -98,23 +113,23 @@ export default function Home() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-primary">
               <tr className='text-white'>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                   Usuario
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                   Tipo de reporte
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                   Fecha de creación
                 </th>
-                {(activePage === "historial") && (
+                {(activePage === "history") && (
                   <>
-                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                       Decisión
                     </th>
                   </>
                 )}
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
                   Detalle
                 </th>
               </tr>
@@ -122,12 +137,12 @@ export default function Home() {
             <tbody className="bg-white divide-y divide-gray-200 text-gray-500">
               {(activePage === "monitor") && (
                 <>
-                  {reports.map(({ username, type, createdAt }, i) => (
+                  {reports?.map(({ user, type, createdAt }, i) => (
                     <tr
                       key={`${i} - ${createdAt}`}
                     >
                       <td className="px-6 py-4 text-center whitespace-nowrap">
-                        {username}
+                        {user.username}
                       </td>
                       <td className="px-6 py-4 text-center whitespace-nowrap">
                         {type}
@@ -135,21 +150,21 @@ export default function Home() {
                       <td className="px-6 py-4 text-center whitespace-nowrap">
                         {createdAt}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <LuEye className="text-gray-500" />
+                      <td className="px-6 py-4 flex justify-center items-center whitespace-nowrap">
+                        <LuEye className="text-gray-500 hover:text-primary" />
                       </td>
                     </tr>
                   ))}
                 </>
               )}
-              {(activePage === "historial") && (
+              {(activePage === "history") && (
                 <>
-                  {reports.map(({ username, type, createdAt, status }, i) => (
+                  {reports?.map(({ user, type, createdAt, status }, i) => (
                     <tr
                       key={`${i} - ${createdAt}`}
                     >
                       <td className="px-6 py-4 text-center whitespace-nowrap">
-                        {username}
+                        {user.username}
                       </td>
                       <td className="px-6 py-4 text-center whitespace-nowrap">
                         {type}
@@ -160,8 +175,8 @@ export default function Home() {
                       <td className="px-6 py-4 text-center whitespace-nowrap">
                         {status}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <LuEye className="text-gray-500" />
+                      <td className="px-6 py-4 flex justify-center items-center whitespace-nowrap">
+                        <LuEye className="text-gray-500 hover:text-primary" />
                       </td>
                     </tr>
                   ))}
@@ -173,14 +188,22 @@ export default function Home() {
 
         <div className="flex justify-between items-center mt-4">
           <div className="text-gray-500">Página {page}/{pages}</div>
-          <div className="flex space-x-2">
-            <button className="p-2 bg-primary text-white rounded-md">
+          {(pages > 1) && (
+            <div className="flex space-x-2">
+            <button className="p-2 bg-primary hover:bg-darkprim text-white rounded-md"
+              onClick={loadLast}
+              disabled={page === 1}
+            >
               {'<'}
             </button>
-            <button className="p-2 bg-primary text-white rounded-md">
+            <button className="p-2 bg-primary hover:bg-darkprim text-white rounded-md"
+              onClick={loadNext}
+              disabled={page === pages}
+            >
               {'>'}
             </button>
           </div>
+          )}
         </div>
       </main>
     </div>

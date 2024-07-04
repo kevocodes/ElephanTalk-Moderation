@@ -25,13 +25,13 @@ export const Navbar = React.memo(({
                         }`}
                     onClick={() => setActivePage('monitor')}
                 >
-                    <RiFileWarningFill />
+                    <RiFileWarningFill/>
                     <span className="mr-2">monitor</span>
                 </button>
                 <button
-                    className={`flex items-center p-2 text-gray-700 hover:text-teal-500 ${activePage === 'historial' ? 'border-b-2 border-teal-500' : ''
+                    className={`flex items-center p-2 text-gray-700 hover:text-teal-500 ${activePage === 'history' ? 'border-b-2 border-teal-500' : ''
                         }`}
-                    onClick={() => setActivePage('historial')}
+                    onClick={() => setActivePage('history')}
                 >
                     <RiFileHistoryFill />
                     <span className="mr-2">historial</span>

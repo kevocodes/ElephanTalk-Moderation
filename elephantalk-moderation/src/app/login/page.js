@@ -36,9 +36,11 @@ function LoginPage() {
     };
 
     const handlesubmit = (e) => {
+        e.preventDefault();
+
         try {
             setLoading(true);
-            e.preventDefault();
+            
 
             signIn("credentials", {
                 username: formData.username,
@@ -48,9 +50,8 @@ function LoginPage() {
             });
         } catch (error) {
             console.log(error.message);
-        } finally {
             setLoading(false);
-        }
+        } 
     };
 
     return (
@@ -89,13 +90,14 @@ function LoginPage() {
                     <button
                         type="submit"
                         className="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-darkprim transition duration-200"
+                        disabled={loading}
                     >
                         {!loading ?
                             ("Sign In") :
                             (<ClipLoader
                                 loading={true}
                                 color="white"
-                                size={5}
+                                size={16}
                             />)}
                     </button>
                 </form>
