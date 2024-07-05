@@ -21,21 +21,20 @@ export const Navbar = React.memo(({
             </div>
             <nav className="flex space-x-4">
                 <button
-                    className={`flex items-center p-2 text-gray-700 hover:text-teal-500 ${activePage === 'monitor' ? 'border-b-2 border-teal-500' : ''
-                        }`}
+                    className={`flex items-center p-2 text-gray-700 hover:text-teal-500 ${activePage === 'monitor' ? 'border-b-2 border-teal-500' : ''}`}
                     onClick={() => setActivePage('monitor')}
                 >
-                    <RiFileWarningFill/>
-                    <span className="mr-2">monitor</span>
+                    <RiFileWarningFill className="text-2xl mr-2" /> {/* Adjust the font size and margin */}
+                    <span className="text-base">monitor</span> {/* Adjust the text size if needed */}
                 </button>
                 <button
-                    className={`flex items-center p-2 text-gray-700 hover:text-teal-500 ${activePage === 'history' ? 'border-b-2 border-teal-500' : ''
-                        }`}
+                    className={`flex items-center p-2 text-gray-700 hover:text-teal-500 ${activePage === 'history' ? 'border-b-2 border-teal-500' : ''}`}
                     onClick={() => setActivePage('history')}
                 >
-                    <RiFileHistoryFill />
-                    <span className="mr-2">historial</span>
+                    <RiFileHistoryFill className="text-2xl mr-2" /> {/* Adjust the font size and margin */}
+                    <span className="text-base">historial</span> {/* Adjust the text size if needed */}
                 </button>
+                
                 <button className="flex items-center p-2 text-gray-700 hover:text-teal-500"
                     onClick={() => signOut({ callbackUrl: "/login" })}
                 >
