@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import React from "react"
 import { RiFileWarningFill } from "react-icons/ri";
 import { RiFileHistoryFill } from "react-icons/ri";
+import { BeatLoader } from "react-spinners";
 
 export const Navbar = React.memo(({
     activePage,
@@ -42,7 +43,11 @@ export const Navbar = React.memo(({
                 </button>
             </nav>
             <div className="text-gray-700">
-                {`${session?.data?.user?.name} ${session?.data?.user?.lastname}`}
+                {(session?.data?.user?.name === undefined) ?
+                (<BeatLoader 
+                    color='#25a2b5'
+                    size={10}
+                />) : (`${session?.data?.user?.name} ${session?.data?.user?.lastname}`)}
             </div>
         </header >
     );

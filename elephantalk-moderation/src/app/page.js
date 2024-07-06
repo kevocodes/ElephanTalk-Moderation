@@ -17,6 +17,7 @@ export default function Home() {
   const [selectedRep, setSelectedRep] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [rep, setReport] = React.useState({});
+  const [refresh, setRefresh] = React.useState(false);
   const [monitorOpen, setMonitorOpen] = React.useState(false);
   const [historyOpen, setHistoryOpen] = React.useState(false);
 
@@ -27,7 +28,9 @@ export default function Home() {
       return;
     }
 
-    console.log("sadmlsmad");
+    if(!refresh){
+      return;
+    }
 
     if (activePage === "monitor") {
       const fetchReports = async () => {
@@ -45,6 +48,10 @@ export default function Home() {
           setPages(data?.pagination.pages);
 
           setLoading(false);
+          if(refresh){
+            setRefresh(false);
+          }
+
         } catch (error) {
           setLoading(false);
           //showAlert("Oops try again later...", "error");
@@ -68,6 +75,9 @@ export default function Home() {
           setPages(data?.pagination.pages);
 
           setLoading(false);
+          if(refresh){
+            setRefresh(false);
+          }
         } catch (error) {
           setLoading(false);
           //showAlert("Oops try again later...", "error");
@@ -76,7 +86,7 @@ export default function Home() {
 
       fetchReports();
     }
-  }, [session, activePage, page]);
+  }, [session, activePage, page, refresh]);
 
 
   React.useEffect(() => {
@@ -86,19 +96,17 @@ export default function Home() {
 
     const fetchReport = async () => {
       try {
-        const  report  = await GetReports({
+        const report = await GetReports({
           token: session?.data?.accessToken,
           endpoint: selectedRep,
         });
 
-        console.log(report);
-
         if (activePage === "monitor") {
-          console.log("entre")
           setReport(report?.data);
           setMonitorOpen(true);
         }
         else if (activePage === "history") {
+          setReport(report?.data);
           setHistoryOpen(true)
         }
 
@@ -145,6 +153,7 @@ export default function Home() {
               report={rep}
               isOpen={monitorOpen}
               onClose={() => setMonitorOpen(false)}
+              refresh = {setRefresh}
             />
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-primary">

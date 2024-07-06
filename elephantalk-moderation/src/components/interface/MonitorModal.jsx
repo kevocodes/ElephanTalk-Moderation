@@ -1,52 +1,81 @@
 import React from "react"
-import { Modal, Box, Typography } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { formatDate } from "@/utils/formatDate";
+import { ChangeStatus } from "@/services/api";
+import { useSession } from "next-auth/react";
 
-export const MonitorModal = ({ report, isOpen, onClose }) => {
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-    };
-
+export const MonitorModal = ({ report, isOpen, onClose, refresh }) => {
+    
+    const session = useSession();
 
     const handleApprove = (rep) => {
+        const repstatus = async () => {
+            try {
+                const result = await ChangeStatus({
+                    token: session?.data?.accessToken,
+                    id: rep,
+                    status: "accepted",
+                });
 
+                    onClose();
+                    refresh(true);
+
+            } catch (error) {
+
+            }
+        };
+
+        repstatus();
     };
 
     const handleReject = (rep) => {
+        const repstatus = async () => {
+            try {
+                const result = await ChangeStatus({
+                    token: session?.data?.accessToken,
+                    id: rep,
+                    status: "rejected",
+                });
 
+                    onClose();
+                    refresh(true);
+
+            } catch (error) {
+
+            }
+        };
+
+        repstatus()
     };
 
     return (
-
-        < Modal
-            open={isOpen}
-            onClose={onClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+        <Dialog open={isOpen} onClose={onClose}
+            PaperProps={{
+                style: {
+                    backdropFilter: "blur(5px)", // Adds the blur effect
+                }
+            }}
         >
-            <Box sx={style}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Detalle del Reporte
-                </Typography>
-                <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    <div className="report-detail">
-                        <p><strong>ID:</strong> {report?._id}</p>
-                        <p><strong>Tipo de reporte:</strong> {report?.type}</p>
-                        <p><strong>Etiquetas:</strong> {report?.tags?.join(', ')}</p>
-                        <p><strong>Contenido:</strong> {report?.content}</p>
-                        <p><strong>Usuario:</strong> {report?.user?.username}</p>
-                        <p><strong>Fecha de creación:</strong> {formatDate(report?.createdAt)}</p>
-                    </div>
-                </Typography>
-            </Box>
-        </ Modal >
+            <DialogTitle className="text-darkprim text-center">Detalle del reporte</DialogTitle>
+            <DialogContent>
+                <div className="report-detail">
+                    <p><strong>ID:</strong> {report?._id}</p>
+                    <p><strong>Tipo de reporte:</strong> {report?.type}</p>
+                    <p><strong>Etiquetas:</strong> {report?.tags?.join(', ')}</p>
+                    <p><strong>Contenido:</strong> {report?.content}</p>
+                    <p><strong>Usuario:</strong> {report?.user?.username}</p>
+                    <p><strong>Fecha de creación:</strong> {formatDate(report?.createdAt)}</p>
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => handleApprove(report?._id)} color="primary">
+                    Aprobar
+                </Button>
+                <Button onClick={() => handleReject(report?._id)} color="error">
+                    Rechazar
+                </Button>
+            </DialogActions>
+        </Dialog>
 
     );
 };
