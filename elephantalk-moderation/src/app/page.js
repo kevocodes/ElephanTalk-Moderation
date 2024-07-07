@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import React from 'react';
 import { LuEye } from 'react-icons/lu';
 import ClipLoader from "react-spinners/ClipLoader";
+import { HistoryModal } from '@/components/HistoryModal';
 
 export default function Home() {
   const [activePage, setActivePage] = React.useState('monitor');
@@ -28,21 +29,15 @@ export default function Home() {
       return;
     }
 
-    if(!refresh){
-      return;
-    }
-
     if (activePage === "monitor") {
       const fetchReports = async () => {
         try {
           setLoading(true);
-          const { data } = await GetReports({
+          const { data } = await GetReports({ 
             token: session?.data?.accessToken,
             endpoint: "monitor",
             query: `limit=${10}&page=${page}`,
           });
-
-          console.log(data);
 
           setReports(data?.reports);
           setPages(data?.pagination.pages);
@@ -107,7 +102,7 @@ export default function Home() {
         }
         else if (activePage === "history") {
           setReport(report?.data);
-          setHistoryOpen(true)
+          setHistoryOpen(true);
         }
 
       } catch (error) {
@@ -119,6 +114,11 @@ export default function Home() {
 
   }, [selectedRep])
 
+  React.useEffect(() => {
+    if(historyOpen === false || monitorOpen === false){
+      setSelectedRep("");
+    }
+  },[historyOpen, monitorOpen])
 
 
   const loadNext = () => {
@@ -154,6 +154,11 @@ export default function Home() {
               isOpen={monitorOpen}
               onClose={() => setMonitorOpen(false)}
               refresh = {setRefresh}
+            />
+            <HistoryModal 
+              report={rep}
+              isOpen={historyOpen}
+              onClose={() => setHistoryOpen(false)}
             />
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-primary">
