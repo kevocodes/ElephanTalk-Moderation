@@ -5,6 +5,7 @@ import React from "react"
 import { RiFileWarningFill } from "react-icons/ri";
 import { RiFileHistoryFill } from "react-icons/ri";
 import { BeatLoader } from "react-spinners";
+import { Button, Menu, MenuItem } from "@mui/material";
 
 export const Navbar = React.memo(({
     activePage,
@@ -12,8 +13,15 @@ export const Navbar = React.memo(({
 }) => {
     const session = useSession();
 
-    // Default active page
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     return (
         <header className="flex items-center justify-between bg-white p-4 shadow-md" >
@@ -35,19 +43,23 @@ export const Navbar = React.memo(({
                     <RiFileHistoryFill className="text-2xl mr-2" /> {/* Adjust the font size and margin */}
                     <span className="text-base">historial</span> {/* Adjust the text size if needed */}
                 </button>
-                
-                <button className="flex items-center p-2 text-gray-700 hover:text-teal-500"
-                    onClick={() => signOut({ callbackUrl: "/login" })}
-                >
-                    <span className="mr-2">historial</span>
-                </button>
             </nav>
             <div className="text-gray-700">
                 {(session?.data?.user?.name === undefined) ?
-                (<BeatLoader 
-                    color='#25a2b5'
-                    size={10}
-                />) : (`${session?.data?.user?.name} ${session?.data?.user?.lastname}`)}
+                    (<BeatLoader
+                        color='#25a2b5'
+                        size={10}
+                    />) : (<Button onClick={handleClick}>
+                        {`${session?.data?.user?.name} ${session?.data?.user?.lastname}`}
+                    </Button>)}
+                <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                >
+                    <MenuItem onClick={() => signOut({ callbackUrl: "/login" })}>Logout</MenuItem>
+                </Menu>
             </div>
         </header >
     );
