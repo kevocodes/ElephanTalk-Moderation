@@ -43,9 +43,6 @@ export default function Home() {
           setPages(data?.pagination.pages);
 
           setLoading(false);
-          if(refresh){
-            setRefresh(false);
-          }
 
         } catch (error) {
           setLoading(false);
@@ -54,6 +51,9 @@ export default function Home() {
       };
 
       fetchReports();
+      if(refresh){
+        setRefresh(false);
+      }
     }
     else if (activePage === "history") {
       const fetchReports = async () => {
@@ -70,9 +70,6 @@ export default function Home() {
           setPages(data?.pagination.pages);
 
           setLoading(false);
-          if(refresh){
-            setRefresh(false);
-          }
         } catch (error) {
           setLoading(false);
           //showAlert("Oops try again later...", "error");
@@ -80,6 +77,9 @@ export default function Home() {
       };
 
       fetchReports();
+      if(refresh){
+        setRefresh(false);
+      }
     }
   }, [session, activePage, page, refresh]);
 
@@ -117,6 +117,8 @@ export default function Home() {
   React.useEffect(() => {
     if(historyOpen === false || monitorOpen === false){
       setSelectedRep("");
+      if(refresh)
+      setRefresh(false);
     }
   },[historyOpen, monitorOpen])
 
