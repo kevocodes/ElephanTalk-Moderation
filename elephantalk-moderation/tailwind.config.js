@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        'dark-login': "url('/assets/login/login-dark-background.webp')"
+        'dark-login': "url('/assets/login/login-light-background.webp')"
       },
       colors: {
         primary: "#25a2b5",
