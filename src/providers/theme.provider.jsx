@@ -2,6 +2,7 @@
 
 import { ThemeProvider } from "@emotion/react";
 import { createTheme } from "@mui/material";
+import { ToastContainer } from "react-toastify";
 
 const theme = createTheme({
   palette: {
@@ -15,7 +16,12 @@ const theme = createTheme({
 });
 
 function MUIThemeProvider({ children }) {
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider theme={theme}>
+      {children}
+      <ToastContainer />
+    </ThemeProvider>
+  );
 }
 
 export default MUIThemeProvider;
