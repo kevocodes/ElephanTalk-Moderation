@@ -9,8 +9,8 @@ import React from "react";
 import { LuEye } from "react-icons/lu";
 import ClipLoader from "react-spinners/ClipLoader";
 import { HistoryModal } from "@/components/HistoryModal";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import SelectOption from "@/components/SelectOption";
+import { SortIcon } from "@/components/interface/SortIcon";
 
 export default function Home() {
   const [activePage, setActivePage] = React.useState("monitor");
@@ -24,7 +24,11 @@ export default function Home() {
   const [monitorOpen, setMonitorOpen] = React.useState(false);
   const [historyOpen, setHistoryOpen] = React.useState(false);
 
+  //estado para poder cambiar el filtrado de los reportes
   const [filterOption, setFilterOption] = React.useState("todos");
+
+  //estado para identificar cambio en ordenamiento por defecto estará ordenado en sentido ascendente
+  const [clickEvent, setClickEvent] = React.useState(false);
 
   const session = useSession();
 
@@ -40,6 +44,9 @@ export default function Home() {
 
           const query = new URLSearchParams({ limit: 10, page });
           if (filterOption !== "todos") query.append("type", filterOption);
+
+          if (clickEvent) query.append("order", "desc");
+          else query.append("order", "asc");
 
           const { data } = await GetReports({
             token: session?.data?.accessToken,
@@ -65,9 +72,12 @@ export default function Home() {
       const fetchReports = async () => {
         try {
           setLoading(true);
-          
+
           const query = new URLSearchParams({ limit: 10, page });
           if (filterOption !== "todos") query.append("type", filterOption);
+
+          if (clickEvent) query.append("order", "desc");
+          else query.append("order", "asc");
 
           const { data } = await GetReports({
             token: session?.data?.accessToken,
@@ -90,7 +100,7 @@ export default function Home() {
         setRefresh(false);
       }
     }
-  }, [session, activePage, page, refresh, filterOption]);
+  }, [session, activePage, page, refresh, filterOption, clickEvent]);
 
   React.useEffect(() => {
     if (selectedRep === "") {
@@ -137,25 +147,29 @@ export default function Home() {
     setFilterOption(event.target.value);
   };
 
+  //función para determinar si se ha hecho click sobre el ícono de ordenamiento
+  function handleIcon(click) {
+    setClickEvent(!click);
+  }
+
   return (
     <>
       <div className="min-h-screen bg-gray-100">
         <Navbar activePage={activePage} setActivePage={setActivePage} />
         <main className="p-4">
-          <h2 className="text-xl font-semibold mb-4 text-darkprim">
-            {activePage === "monitor"
-              ? "Monitor de reportes"
-              : "Historial de reportes"}
-          </h2>
-
-          <div className="flex justify-end mb-4">
-            <SelectOption
-              filterOption={filterOption}
-              handleSelectFilterOptionChange={handleSelectFilterOptionChange}
-            />
+          <div className="flex justify-between items-center mt-6">
+            <h2 className="text-xl font-semibold mb-4 text-darkprim">
+              {activePage === "monitor" ? "Report monitor" : "Report history"}
+            </h2>
+            <div className="flex justify-end mb-4">
+              <SelectOption
+                filterOption={filterOption}
+                handleSelectFilterOptionChange={handleSelectFilterOptionChange}
+              />
+            </div>
           </div>
 
-          <div className="bg-white shadow-md rounded-md overflow-hidden">
+          <div className="bg-white shadow-md rounded-md overflow-hidden mt-6">
             <MonitorModal
               report={rep}
               isOpen={monitorOpen}
@@ -171,23 +185,27 @@ export default function Home() {
               <thead className="bg-primary">
                 <tr className="text-white">
                   <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
-                    Usuario
+                    User
                   </th>
                   <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
-                    Tipo de reporte
+                    Report type
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
-                    Fecha de creación
+                  <th
+                    className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider flex
+                  justify-center items-center gap-3"
+                  >
+                    Created At
+                    <SortIcon eventClick={handleIcon} />
                   </th>
                   {activePage === "history" && (
                     <>
                       <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
-                        Decisión
+                        Decision
                       </th>
                     </>
                   )}
                   <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
-                    Detalle
+                    Detail
                   </th>
                 </tr>
               </thead>
@@ -209,7 +227,7 @@ export default function Home() {
                             </td>
                             <td className="px-6 py-4 flex justify-center items-center whitespace-nowrap">
                               <LuEye
-                                className="text-gray-500 hover:text-primary"
+                                className="text-gray-500 hover:text-primary cursor-pointer"
                                 onClick={() => setSelectedRep(_id)}
                               />
                             </td>
@@ -236,7 +254,7 @@ export default function Home() {
                               </td>
                               <td className="px-6 py-4 flex justify-center items-center whitespace-nowrap">
                                 <LuEye
-                                  className="text-gray-500 hover:text-primary"
+                                  className="text-gray-500 hover:text-primary cursor-pointer"
                                   onClick={() => setSelectedRep(_id)}
                                 />
                               </td>
@@ -250,27 +268,35 @@ export default function Home() {
               </tbody>
             </table>
             {loading && (
-              <article className="flex items-center justify-center w-full h-[28rem]">
+              <article className="flex items-center justify-center w-full h-[16rem]">
                 <ClipLoader color="#25a2b5" size={70} />
+              </article>
+            )}
+
+            {session?.data?.user && !loading && reports?.length === 0 && (
+              <article className="flex items-center justify-center w-full h-[16rem]">
+                <p className="text-gray-500">No reports found</p>
               </article>
             )}
           </div>
 
           <div className="flex justify-between items-center mt-4">
-            <div className="text-gray-500">
-              Página {page}/{pages}
-            </div>
+            {pages > 0 && (
+              <div className="text-gray-500">
+                Page {page}/{pages}
+              </div>
+            )}
             {pages > 1 && (
               <div className="flex space-x-2">
                 <button
-                  className="p-2 bg-primary hover:bg-darkprim text-white rounded-md"
+                  className="p-2 bg-primary hover:bg-darkprim text-white rounded-md cursor-pointer disabled:opacity-50 disabled:hover:bg-primary"
                   onClick={loadLast}
                   disabled={page === 1}
                 >
                   {"<"}
                 </button>
                 <button
-                  className="p-2 bg-primary hover:bg-darkprim text-white rounded-md"
+                  className="p-2 bg-primary hover:bg-darkprim text-white rounded-md cursor-pointer disabled:opacity-50 disabled:hover:bg-primary"
                   onClick={loadNext}
                   disabled={page === pages}
                 >

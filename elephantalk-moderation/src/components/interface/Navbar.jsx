@@ -26,7 +26,7 @@ export const Navbar = React.memo(({
     return (
         <header className="flex items-center justify-between bg-white p-4 shadow-md" >
             <div className="flex items-center">
-                <img src="/assets/logo.webp" alt="ElephanTalk Logo" className="h-8 mr-2" />
+                <img src="/assets/logo.webp" alt="ElephanTalk Logo" className="h-6 mr-2" />
             </div>
             <nav className="flex space-x-4">
                 <button
@@ -34,14 +34,14 @@ export const Navbar = React.memo(({
                     onClick={() => setActivePage('monitor')}
                 >
                     <RiFileWarningFill className="text-2xl mr-2" /> {/* Adjust the font size and margin */}
-                    <span className="text-base">monitor</span> {/* Adjust the text size if needed */}
+                    <span className="text-base">Monitor</span> {/* Adjust the text size if needed */}
                 </button>
                 <button
                     className={`flex items-center p-2 text-gray-700 hover:text-teal-500 ${activePage === 'history' ? 'border-b-2 border-teal-500' : ''}`}
                     onClick={() => setActivePage('history')}
                 >
                     <RiFileHistoryFill className="text-2xl mr-2" /> {/* Adjust the font size and margin */}
-                    <span className="text-base">historial</span> {/* Adjust the text size if needed */}
+                    <span className="text-base">History</span> {/* Adjust the text size if needed */}
                 </button>
             </nav>
             <div className="text-gray-700">

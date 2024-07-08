@@ -12,9 +12,9 @@ function SelectOption({ filterOption, handleSelectFilterOptionChange}) {
         label="Age"
         onChange={handleSelectFilterOptionChange}
       >
-        <MenuItem value={"todos"}>Todos</MenuItem>
-        <MenuItem value={"post"}>Publicaciones</MenuItem>
-        <MenuItem value={"comment"}>Comentarios</MenuItem>
+        <MenuItem value={"todos"}>All</MenuItem>
+        <MenuItem value={"post"}>Posts</MenuItem>
+        <MenuItem value={"comment"}>Comments</MenuItem>
       </Select>
     </FormControl>
   );
