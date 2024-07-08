@@ -16,6 +16,22 @@ export const GetReports = async ({ token, endpoint = "", query = "" }) => {
     return await response.json();
 };
 
+export const GetReportsByType = async ({ token, endpoint = "", query = "" }) => {
+    const response = await fetch(`${BASE_URL}/toxicity-reports/${endpoint}?${query}`, {
+        method: "GET",
+        headers: {
+            "Content-Type" : "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if(!response.ok){
+        throw new Error("")
+    }
+
+    return await response.json()
+}
+
 export const ChangeStatus = async ({token, id, status}) => {    
     const requestBody = {
         status: status
