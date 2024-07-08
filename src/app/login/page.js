@@ -3,8 +3,8 @@
 import React from "react";
 import { LuEye } from "react-icons/lu";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 import ClipLoader from "react-spinners/ClipLoader";
+import { toast } from "react-toastify";
 
 function LoginPage() {
   const [formData, setFormData] = React.useState({
@@ -12,16 +12,16 @@ function LoginPage() {
     password: "",
   });
   const [showPassword, setShowPassword] = React.useState(false);
-  const params = useSearchParams();
 
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    const error = params.get("error");
+    const searchParams = new URLSearchParams(window.location.search);
+    const error = searchParams.get("error");
     if (error === "CredentialsSignin") {
-      alert("Credenciales incorrectas");
+      toast.error("Credenciales incorrectas");
     }
-  }, [params]);
+  }, []);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
